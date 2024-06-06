@@ -22,10 +22,10 @@ pipeline {
         stage('Build docker image') {
            steps {
                script {         
-                 def customImage = docker.build('initsixcloud/petclinic', "./docker")
-                 docker.withRegistry('https://hub.docker.com/repository/docker/pranav172/', 'dockerHub') {
-                 customImage.push("${env.BUILD_NUMBER}")
-                 }                     
+                 def customImage = docker.build('pranav172/petclinic', "./docker")
+                withCredentials([usernamePassword(credentialsId: 'dockerHub', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
+                sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
+                sh 'docker push pranav172/petclinic:v1'   
            }
         }
 	  }
